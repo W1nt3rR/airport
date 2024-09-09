@@ -289,15 +289,16 @@ void renderScene() {
     setupLighting();
     setupFog();
 
+    // Render the scene normally
     drawGround(0.0f, 0.0f, 0.0f);
     drawRunway(0.0f, 0.0f, 0.0f);
     drawTaxiway(0.0f, 0.0f, 0.0f);
     drawControlTower(12.0f, 0.0f, -30.0f);
     
     // Airplanes on both sides
-    drawAirplane(-7.0f, 0.5f, -20.0f);
-    drawAirplane(7.0f, 0.5f, -20.0f);
-    drawAirplane(0.0f, 0.5f, 0.0f, 2.0f); // Main airplane in the middle
+    drawAirplane(-8.0f, 0.5f, -20.0f);
+    drawAirplane(8.0f, 0.5f, -20.0f);
+    drawAirplane(0.0f, 0.5f, 30.0f, 3.0f); // Main airplane in the middle
 
     // Update radar rotation
     radarAngle += 0.5f;
@@ -307,6 +308,7 @@ void renderScene() {
     timeOfDay += 0.0001f;
     if (timeOfDay > 2 * 3.14159f) timeOfDay = 0.0f;
 
+    // Swap buffers
     glutSwapBuffers();
 }
 
