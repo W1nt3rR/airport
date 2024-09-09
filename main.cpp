@@ -387,12 +387,14 @@ void mouseMove(int x, int y) {
 // Initialize tree positions
 void initializeTrees() {
     srand(time(0)); // Seed for random number generation
-    for (int i = 0; i < 50; ++i) {
+
+    for (int i = 0; i < 250; ++i) {
         float treeX, treeZ;
         do {
             treeX = (rand() % 200) - 100; // Random x position between -100 and 100
             treeZ = (rand() % 200) - 100; // Random z position between -100 and 100
         } while (treeX > -10.0f && treeX < 10.0f && treeZ > -50.0f && treeZ < 50.0f); // Ensure trees are not on the runway
+
         treePositions.push_back({treeX, treeZ});
     }
 }
