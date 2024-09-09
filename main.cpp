@@ -312,30 +312,37 @@ void renderScene() {
 
 // Handle keyboard input for movement and toggling light/fog
 void processNormalKeys(unsigned char key, int xx, int yy) {
-    float speed = 0.1f;
+    float speed = 0.2f;
 
     switch (key) {
+        case 'W':
         case 'w':
             deltaMove = speed;
             break;
+        case 'S':
         case 's':
             deltaMove = -speed;
             break;
+        case 'A':
         case 'a':
             deltaStrafe = -speed;
             break;
+        case 'D':
         case 'd':
             deltaStrafe = speed;
             break;
         case ' ':
             deltaFly = speed;
             break;
+        case 'X':
         case 'x':
             deltaFly = -speed;
             break;
+        case 'T':
         case 't': // Toggle lights
             lightOn = !lightOn;
             break;
+        case 'F':
         case 'f': // Toggle fog
             fogEnabled = !fogEnabled;
             break;
