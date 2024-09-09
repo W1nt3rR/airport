@@ -196,7 +196,7 @@ void drawTree(float x, float y, float z) {
     glPopMatrix();
 
     // Tree leaves
-    glColor3f(0.0f, 0.5f, 0.0f);
+    glColor3f(0.2f, 0.6f, 0.1f);
     glPushMatrix();
     glTranslatef(0.0f, 2.5f, 0.0f);
     glutSolidSphere(1.5f, 20, 20);
