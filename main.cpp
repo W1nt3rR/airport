@@ -18,8 +18,37 @@ float timeOfDay = 0.0f;  // Day-night cycle
 // Fog effect variables
 bool fogEnabled = true;
 
+// Textures
+GLuint airplaneTexture;
+GLuint treeTexture;
+
 // Tree positions
 std::vector<std::pair<float, float>> treePositions;
+
+GLuint LoadTexture(const char * filename, int width, int height)
+{
+    GLuint texture;
+    unsigned char * data;
+    FILE * file;
+
+    file = fopen( filename, "rb" );  
+    if ( file == NULL ) return 0;  
+
+    data = (unsigned char *)malloc( width * height * 3 ); 
+    fread( data, width * height * 3, 1, file ); 
+    fclose( file ); 
+
+    glGenTextures( 1, &texture ); 
+    glBindTexture( GL_TEXTURE_2D, texture ); 
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    free( data ); 
+    return texture;
+}
 
 // Function to set up lighting for day-night cycle
 void setupLighting() {
@@ -95,12 +124,18 @@ void drawAirplane(float x, float y, float z, float scale = 1.0f) {
     glTranslatef(x, y, z);
     glScalef(scale, scale, scale);
 
+    // Texture for airplane
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, airplaneTexture);
+
     // Fuselage
     glColor3f(0.6f, 0.6f, 0.6f);
     glPushMatrix();
     glScalef(2.0f, 0.6f, 6.0f);
     glutSolidCube(1.0f);
     glPopMatrix();
+
+    glDisable(GL_TEXTURE_2D);
 
     // Cockpit (front part)
     glColor3f(0.2f, 0.2f, 0.7f);
@@ -195,12 +230,18 @@ void drawTree(float x, float y, float z) {
     glutSolidCube(1.0f);
     glPopMatrix();
 
+    // Texture for tree leaves
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, treeTexture);
+
     // Tree leaves
     glColor3f(0.2f, 0.6f, 0.1f);
     glPushMatrix();
     glTranslatef(0.0f, 2.5f, 0.0f);
     glutSolidSphere(1.5f, 20, 20);
     glPopMatrix();
+
+    glDisable(GL_TEXTURE_2D);
 
     glPopMatrix();
 }
@@ -408,6 +449,12 @@ void initializeTrees() {
     }
 }
 
+// Load textures for the scene
+void initializeTextures() {
+    airplaneTexture = LoadTexture("./airplane.bmp", 6000, 3375);
+    treeTexture = LoadTexture("./tree.bmp", 6000, 3375);
+}
+
 // Main function
 int main(int argc, char **argv) {
     glutInit(&argc, argv);
@@ -418,6 +465,7 @@ int main(int argc, char **argv) {
 
     glEnable(GL_DEPTH_TEST);
 
+    initializeTextures(); // Load textures
     initializeTrees(); // Initialize tree positions
 
     glutDisplayFunc(renderScene);
