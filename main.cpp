@@ -124,15 +124,51 @@ void drawAirplane(float x, float y, float z, float scale = 1.0f) {
     glTranslatef(x, y, z);
     glScalef(scale, scale, scale);
 
-    // Texture for airplane
+    // Fuselage
+    glPushMatrix();
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, airplaneTexture);
 
-    // Fuselage
-    glColor3f(0.6f, 0.6f, 0.6f);
-    glPushMatrix();
     glScalef(2.0f, 0.6f, 6.0f);
-    glutSolidCube(1.0f);
+    glBegin(GL_QUADS);
+
+    // Front face
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, 0.5f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(0.5f, -0.5f, 0.5f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(0.5f, 0.5f, 0.5f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, 0.5f, 0.5f);
+
+    // Back face
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, -0.5f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(0.5f, -0.5f, -0.5f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(0.5f, 0.5f, -0.5f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, 0.5f, -0.5f);
+
+    // Top face
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, 0.5f, -0.5f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(0.5f, 0.5f, -0.5f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(0.5f, 0.5f, 0.5f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, 0.5f, 0.5f);
+
+    // Bottom face
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, -0.5f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(0.5f, -0.5f, -0.5f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(0.5f, -0.5f, 0.5f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, -0.5f, 0.5f);
+
+    // Right face
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(0.5f, -0.5f, -0.5f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(0.5f, -0.5f, 0.5f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(0.5f, 0.5f, 0.5f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(0.5f, 0.5f, -0.5f);
+
+    // Left face
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-0.5f, -0.5f, -0.5f);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-0.5f, -0.5f, 0.5f);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-0.5f, 0.5f, 0.5f);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-0.5f, 0.5f, -0.5f);
+
+    glEnd();
     glPopMatrix();
 
     glDisable(GL_TEXTURE_2D);
@@ -217,6 +253,39 @@ void drawRunway(float x, float y, float z) {
     glPopMatrix();
 }
 
+void drawTexturedSphere(GLuint texture, float radius, int slices, int stacks) {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    for (int i = 0; i <= stacks; ++i) {
+        float V = i / (float)stacks;
+        float phi = V * M_PI;
+
+        glBegin(GL_QUAD_STRIP);
+        for (int j = 0; j <= slices; ++j) {
+            float U = j / (float)slices;
+            float theta = U * (M_PI * 2);
+
+            float x = cos(theta) * sin(phi);
+            float y = cos(phi);
+            float z = sin(theta) * sin(phi);
+
+            glTexCoord2f(U, V);
+            glVertex3f(x * radius, y * radius, z * radius);
+
+            x = cos(theta) * sin(phi + M_PI / stacks);
+            y = cos(phi + M_PI / stacks);
+            z = sin(theta) * sin(phi + M_PI / stacks);
+
+            glTexCoord2f(U, V + 1.0f / stacks);
+            glVertex3f(x * radius, y * radius, z * radius);
+        }
+        glEnd();
+    }
+
+    glDisable(GL_TEXTURE_2D);
+}
+
 // Draw a tree
 void drawTree(float x, float y, float z) {
     glPushMatrix();
@@ -230,18 +299,12 @@ void drawTree(float x, float y, float z) {
     glutSolidCube(1.0f);
     glPopMatrix();
 
-    // Texture for tree leaves
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, treeTexture);
-
     // Tree leaves
     glColor3f(0.2f, 0.6f, 0.1f);
     glPushMatrix();
     glTranslatef(0.0f, 2.5f, 0.0f);
-    glutSolidSphere(1.5f, 20, 20);
+    drawTexturedSphere(treeTexture, 1.5f, 20, 20);
     glPopMatrix();
-
-    glDisable(GL_TEXTURE_2D);
 
     glPopMatrix();
 }
@@ -355,7 +418,7 @@ void renderScene() {
 
 // Handle keyboard input for movement and toggling light/fog
 void processNormalKeys(unsigned char key, int xx, int yy) {
-    float speed = 0.2f;
+    float speed = 1.0f;
 
     switch (key) {
         case 'W':
@@ -451,8 +514,8 @@ void initializeTrees() {
 
 // Load textures for the scene
 void initializeTextures() {
-    airplaneTexture = LoadTexture("./airplane.bmp", 6000, 3375);
-    treeTexture = LoadTexture("./tree.bmp", 6000, 3375);
+    airplaneTexture = LoadTexture("./rivets-sheet-metal.bmp", 1200, 800);
+    treeTexture = LoadTexture("./rivets-sheet-metal.bmp", 1200, 800);
 }
 
 // Main function
